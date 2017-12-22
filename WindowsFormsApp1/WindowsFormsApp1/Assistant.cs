@@ -180,9 +180,9 @@ namespace SharepointAssistant
                         }
                         if (uxNumberDuplicates.Checked)//checks for duplicates
                         {
-                            string fileNameWithExtension = file.FileName + file.Extention;
+                            string fileNameWithExtension = (file.FileName + file.Extention).ToLower();
                             int count;
-                            if (_fileCounts.ContainsKey(file.FileName + file.Extention))
+                            if (_fileCounts.ContainsKey(fileNameWithExtension))
                             {
                                 count = _fileCounts[fileNameWithExtension] + 1;
                                 _fileCounts[fileNameWithExtension] = count;
