@@ -9,14 +9,18 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
-namespace WindowsFormsApp1
+namespace SharepointAssistant
 {
     public partial class assistant : Form
     {
         /// <summary>
+        /// keeps track of Duplicates
+        /// </summary>
+        private Dictionary<string,int> _fileCounts = new Dictionary<string,int>();
+        /// <summary>
         /// stores the folders to be processed in order
         /// </summary>
-        private Stack<String> _folders = new Stack<string>();
+        private Stack<SharePointDirectory> _folders = new Stack<SharePointDirectory>();
         public assistant()
         {
             InitializeComponent();
@@ -62,52 +66,166 @@ namespace WindowsFormsApp1
 
 
 #region Folder Loading
+        /// <summary>
+        /// Loads a folder using the path in the textbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void uxLoadFolder_Click(object sender, EventArgs e)
         {
-            uxFolderList.Items.Add(uxPath.Text);
-            _folders.Push(uxPath.Text);
-            uxPath.Clear();
+            if (uxPath.Text.Trim().Equals(blankText))
+            {
+                MessageBox.Show("You must enter a path");
+            }
+            else
+            {
+                uxFolderList.Items.Add(uxPath.Text);
+                uxSuffixList.Items.Add(uxSuffix.Text);
+                _folders.Push(new SharePointDirectory(uxPath.Text,uxSuffix.Text));
+                WriteToConsole(uxPath.Text + " was added to the folder list with suffix: " + uxSuffix.Text);
+
+                uxPath.Clear();
+                uxSuffix.Clear();
+            }
         }
+        /// <summary>
+        /// represents what a unedited text box looks like
+        /// </summary>
         string blankText;
+        /// <summary>
+        /// loads a folder from the folder browser dialog
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LoadFolder_Click(object sender, EventArgs e)
         {
             if (uxOpenFolderDialog.ShowDialog() == DialogResult.OK)
             {
-                if (uxPath.Text.Trim().Equals(blankText))
-                {
-                    MessageBox.Show("You must enter a path");
-                }
-                else
-                {
-                    uxFolderList.Items.Add(uxOpenFolderDialog.SelectedPath);
-                    _folders.Push(uxOpenFolderDialog.SelectedPath);
-                }
-
+                uxPath.Text = uxOpenFolderDialog.SelectedPath;
             }
         }
-
+        /// <summary>
+        /// Removes the last entered folder from the stack and the list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void uxRemoveLast_Click(object sender, EventArgs e)
         {
-            string remove =_folders.Pop();
-            for (int n = uxFolderList.Items.Count - 1; n >= 0; --n)
+            if(_folders.Count>0)
             {
-                if (uxFolderList.Items[n].ToString().Contains(remove))
+                string remove = _folders.Pop().FolderDirectory;
+                for (int n = uxFolderList.Items.Count - 1; n >= 0; --n)
                 {
-                    uxFolderList.Items.RemoveAt(n);
+                    if (uxFolderList.Items[n].ToString().Contains(remove))
+                    {
+                        WriteToConsole(remove + " was removed from the folder list");
+                        uxFolderList.Items.RemoveAt(n);
+                        uxSuffixList.Items.RemoveAt(n);
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                MessageBox.Show("No Folders to Remove");
             }
         }
 #endregion
+        /// <summary>
+        /// clears the list and the stack
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void uxClear_Click(object sender, EventArgs e)
         {
             _folders.Clear();
             uxFolderList.Items.Clear();
             uxPath.Clear();
+            uxSuffixList.Items.Clear();
+            WriteToConsole("Cleared");
         }
-
+        /// <summary>
+        /// runs the selected operations
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void uxRun_Click(object sender, EventArgs e)
         {
+            if (_folders.Count > 0) {
+                while (_folders.Count > 0)
+                {
+                    SharePointDirectory folder = _folders.Peek();
+                    while (folder.FileCount > 0)
+                    {
+                        SharePointFile file = folder.PeekNextFile();
+                        StringBuilder finalPath = new StringBuilder();
+                        StringBuilder sb = new StringBuilder();
+                        finalPath.Append(file.FileFolder+"\\");
+                        sb.Append(file.FileName);
+                        if (uxReformatDates.Checked)//reformat date tool
+                        {
 
+                        }
+                        if (uxAddDates.Checked)//add date tool
+                        {
+
+                        }
+                        if (uxAddSuffix.Checked)//suffix tool
+                        {
+                            if (file.HasSuffix)
+                            {
+                                sb.Append(" ");
+                                sb.Append(folder.Suffix);
+                            }
+                        }
+                        if (uxNumberDuplicates.Checked)//checks for duplicates
+                        {
+                            string fileNameWithExtension = file.FileName + file.Extention;
+                            int count;
+                            if (_fileCounts.ContainsKey(file.FileName + file.Extention))
+                            {
+                                count = _fileCounts[fileNameWithExtension] + 1;
+                                _fileCounts[fileNameWithExtension] = count;
+                                sb.Append(" (");
+                                sb.Append(count - 1);
+                                sb.Append(")");
+                            }
+                            else
+                            {
+                                _fileCounts.Add(fileNameWithExtension, 1);
+                            }
+                        }
+                        //wraps up the file name
+                        sb.Append(file.Extention);
+                        finalPath.Append(sb.ToString());
+                        File.Move(file.FilePath, finalPath.ToString());
+                        WriteToConsole("Renamed " + file.FileName + " To " + sb.ToString());
+                        sb.Clear();
+                        folder.NextFile();
+                    }
+                    _folders.Pop();
+                }
+            }
+            else
+            {
+                MessageBox.Show("nothing to process");
+            }
+        }
+
+            
+        /// <summary>
+        /// writes the given string to the internal console and the Form console
+        /// </summary>
+        /// <param name="s"></param>
+        public void WriteToConsole(string s)
+        {
+            uxConsole.Text += s + Environment.NewLine;
+            Console.WriteLine(s);
+        }
+
+        private void uxAddSuffix_Click(object sender, EventArgs e)
+        {
+            uxSuffix.Visible = uxAddSuffix.Checked;
         }
     }
 }

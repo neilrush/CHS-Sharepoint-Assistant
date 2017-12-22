@@ -53,9 +53,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SharePointDirectory.cs" />
+    <Compile Include="SharePointFile.cs" />
     <EmbeddedResource Include="Assistant.resx">
       <DependentUpon>Assistant.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="bin\Debug\Assistant.resx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
