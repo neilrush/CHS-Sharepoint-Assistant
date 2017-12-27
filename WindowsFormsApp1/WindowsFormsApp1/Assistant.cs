@@ -152,6 +152,8 @@ namespace SharepointAssistant
         private void uxRun_Click(object sender, EventArgs e)
         {
             if (_folders.Count > 0) {
+                string exePath = Directory.GetCurrentDirectory();
+                StringBuilder logFile = new StringBuilder();
                 while (_folders.Count > 0)
                 {
                     SharePointDirectory folder = _folders.Peek();
@@ -200,10 +202,22 @@ namespace SharepointAssistant
                         finalPath.Append(sb.ToString());
                         File.Move(file.FilePath, finalPath.ToString());
                         WriteToConsole("Renamed " + file.FileName + " To " + sb.ToString());
+                        logFile.Append(finalPath.ToString()+","+file.FilePath+ Environment.NewLine);
                         sb.Clear();
                         folder.NextFile();
                     }
                     _folders.Pop();
+                }
+                try
+                {
+                    using (StreamWriter sw = File.AppendText(Directory.GetCurrentDirectory() + "\\renamelog.txt"))
+                    {
+                        sw.Write(logFile.ToString() + Environment.NewLine + "END SESSION");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
                 }
             }
             else
@@ -211,8 +225,6 @@ namespace SharepointAssistant
                 MessageBox.Show("nothing to process");
             }
         }
-
-            
         /// <summary>
         /// writes the given string to the internal console and the Form console
         /// </summary>
@@ -226,6 +238,38 @@ namespace SharepointAssistant
         private void uxAddSuffix_Click(object sender, EventArgs e)
         {
             uxSuffix.Visible = uxAddSuffix.Checked;
+        }
+        /// <summary>
+        /// automatically adds a suffix based on the folder name
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void uxPath_TextChanged(object sender, EventArgs e)
+        {
+            if (uxAddSuffix.Checked)
+            {
+                //try
+                //{
+                    string folder = uxPath.Text;
+                    folder = folder.Split('\\')[folder.Split('\\').Length-1];
+                    StringBuilder suffix = new StringBuilder();
+                    if (folder != null) {
+                        string[] folderWords = folder.Split(' ');
+                        foreach (string s in folderWords)
+                        {
+                            suffix.Append(s[0]);
+                        }
+                        if (uxSuffix.Text == blankText)
+                        {
+                            uxSuffix.Text = suffix.ToString().ToUpper();
+                        }
+                    }
+                //}
+                //catch (Exception ex)
+                //{
+                //    MessageBox.Show(ex.ToString);
+                //}
+            }
         }
     }
 }

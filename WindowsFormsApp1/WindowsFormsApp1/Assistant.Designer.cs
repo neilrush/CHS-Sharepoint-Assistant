@@ -97,6 +97,7 @@
             this.uxPath.Name = "uxPath";
             this.uxPath.Size = new System.Drawing.Size(267, 20);
             this.uxPath.TabIndex = 6;
+            this.uxPath.TextChanged += new System.EventHandler(this.uxPath_TextChanged);
             // 
             // uxToolStrip
             // 
@@ -204,7 +205,7 @@
             // 
             this.uxSuffix.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.uxSuffix.Location = new System.Drawing.Point(367, 111);
-            this.uxSuffix.MaxLength = 5;
+            this.uxSuffix.MaxLength = 20;
             this.uxSuffix.Name = "uxSuffix";
             this.uxSuffix.Size = new System.Drawing.Size(50, 20);
             this.uxSuffix.TabIndex = 10;
