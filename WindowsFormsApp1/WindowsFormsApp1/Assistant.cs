@@ -171,7 +171,9 @@ namespace SharepointAssistant
                             FileCodePair pair = new FileCodePair(file.FilePath);
                             if (_fileIDs.ContainsKey(pair))
                             {
-                                File.Delete(file.FilePath);
+                                Directory.CreateDirectory(Directory.GetCurrentDirectory() + "\\DeletedSharePointFiles\\");
+                                File.Move(file.FilePath, Directory.GetCurrentDirectory()+"\\DeletedSharePointFiles\\"+file.FileName+file.Extention);
+                                logFile.Append(Directory.GetCurrentDirectory() + "\\DeletedSharePointFiles\\" + file.FileName + file.Extention + "," + file.FilePath + Environment.NewLine);
                                 WriteToConsole("Deleted " + file.FileName + file.Extention);
                             }
                             else
@@ -240,7 +242,7 @@ namespace SharepointAssistant
                 {
                     using (StreamWriter sw = File.AppendText(Directory.GetCurrentDirectory() + "\\renamelog.txt"))
                     {
-                        sw.Write(logFile.ToString() + "END SESSION");
+                        sw.Write(logFile.ToString());
                     }
                 }
                 catch (Exception ex)
