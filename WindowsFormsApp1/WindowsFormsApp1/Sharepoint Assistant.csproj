@@ -54,6 +54,7 @@
     <Compile Include="Assistant.Designer.cs">
       <DependentUpon>Assistant.cs</DependentUpon>
     </Compile>
+    <Compile Include="FileCodePair.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharePointDirectory.cs" />

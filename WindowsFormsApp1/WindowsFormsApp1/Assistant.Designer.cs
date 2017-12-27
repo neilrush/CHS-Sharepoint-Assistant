@@ -47,6 +47,7 @@
             this.uxShowConsole = new System.Windows.Forms.Button();
             this.uxSuffix = new System.Windows.Forms.TextBox();
             this.uxSuffixList = new System.Windows.Forms.ListBox();
+            this.uxDeleteCopies = new System.Windows.Forms.ToolStripMenuItem();
             this.uxToolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -147,7 +148,8 @@
             this.uxAddDates,
             this.uxReformatDates,
             this.uxAddSuffix,
-            this.uxNumberDuplicates});
+            this.uxNumberDuplicates,
+            this.uxDeleteCopies});
             this.Tools.Name = "Tools";
             this.Tools.Size = new System.Drawing.Size(49, 22);
             this.Tools.Text = "Tools";
@@ -156,21 +158,21 @@
             // 
             this.uxAddDates.CheckOnClick = true;
             this.uxAddDates.Name = "uxAddDates";
-            this.uxAddDates.Size = new System.Drawing.Size(176, 22);
+            this.uxAddDates.Size = new System.Drawing.Size(211, 22);
             this.uxAddDates.Text = "Add Dates";
             // 
             // uxReformatDates
             // 
             this.uxReformatDates.CheckOnClick = true;
             this.uxReformatDates.Name = "uxReformatDates";
-            this.uxReformatDates.Size = new System.Drawing.Size(176, 22);
+            this.uxReformatDates.Size = new System.Drawing.Size(211, 22);
             this.uxReformatDates.Text = "Reformat Dates";
             // 
             // uxAddSuffix
             // 
             this.uxAddSuffix.CheckOnClick = true;
             this.uxAddSuffix.Name = "uxAddSuffix";
-            this.uxAddSuffix.Size = new System.Drawing.Size(176, 22);
+            this.uxAddSuffix.Size = new System.Drawing.Size(211, 22);
             this.uxAddSuffix.Text = "Add Suffix";
             this.uxAddSuffix.Click += new System.EventHandler(this.uxAddSuffix_Click);
             // 
@@ -178,8 +180,8 @@
             // 
             this.uxNumberDuplicates.CheckOnClick = true;
             this.uxNumberDuplicates.Name = "uxNumberDuplicates";
-            this.uxNumberDuplicates.Size = new System.Drawing.Size(176, 22);
-            this.uxNumberDuplicates.Text = "Number Duplicates";
+            this.uxNumberDuplicates.Size = new System.Drawing.Size(211, 22);
+            this.uxNumberDuplicates.Text = "Number Duplicate Names";
             // 
             // uxFolderList
             // 
@@ -219,6 +221,13 @@
             this.uxSuffixList.Name = "uxSuffixList";
             this.uxSuffixList.Size = new System.Drawing.Size(142, 69);
             this.uxSuffixList.TabIndex = 11;
+            // 
+            // uxDeleteCopies
+            // 
+            this.uxDeleteCopies.CheckOnClick = true;
+            this.uxDeleteCopies.Name = "uxDeleteCopies";
+            this.uxDeleteCopies.Size = new System.Drawing.Size(211, 22);
+            this.uxDeleteCopies.Text = "Delete Copy Files";
             // 
             // assistant
             // 
@@ -267,6 +276,7 @@
         private System.Windows.Forms.ToolStripMenuItem uxAddSuffix;
         private System.Windows.Forms.ListBox uxSuffixList;
         private System.Windows.Forms.ToolStripMenuItem uxNumberDuplicates;
+        private System.Windows.Forms.ToolStripMenuItem uxDeleteCopies;
     }
 }
 

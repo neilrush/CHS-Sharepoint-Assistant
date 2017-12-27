@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace SharepointAssistant
 {
@@ -17,6 +18,10 @@ namespace SharepointAssistant
         /// keeps track of Duplicates
         /// </summary>
         private Dictionary<string,int> _fileCounts = new Dictionary<string,int>();
+        /// <summary>
+        /// stores files with a FileCodePair()
+        /// </summary>
+        private Dictionary<FileCodePair,string> _fileIDs = new Dictionary<FileCodePair,string>();
         /// <summary>
         /// stores the folders to be processed in order
         /// </summary>
@@ -159,60 +164,83 @@ namespace SharepointAssistant
                     SharePointDirectory folder = _folders.Peek();
                     while (folder.FileCount > 0)
                     {
+                        
                         SharePointFile file = folder.PeekNextFile();
-                        StringBuilder finalPath = new StringBuilder();
-                        StringBuilder sb = new StringBuilder();
-                        finalPath.Append(file.FileFolder+"\\");
-                        sb.Append(file.FileName);
-                        if (uxReformatDates.Checked)//reformat date tool
+                        if (uxDeleteCopies.Checked)
                         {
-
-                        }
-                        if (uxAddDates.Checked)//add date tool
-                        {
-
-                        }
-                        if (uxAddSuffix.Checked)//suffix tool
-                        {
-                            if (file.HasSuffix)
+                            FileCodePair pair = new FileCodePair(file.FilePath);
+                            if (_fileIDs.ContainsKey(pair))
                             {
-                                sb.Append(" ");
-                                sb.Append(folder.Suffix);
-                            }
-                        }
-                        if (uxNumberDuplicates.Checked)//checks for duplicates
-                        {
-                            string fileNameWithExtension = (file.FileName + file.Extention).ToLower();
-                            int count;
-                            if (_fileCounts.ContainsKey(fileNameWithExtension))
-                            {
-                                count = _fileCounts[fileNameWithExtension] + 1;
-                                _fileCounts[fileNameWithExtension] = count;
-                                sb.Append(" (");
-                                sb.Append(count - 1);
-                                sb.Append(")");
+                                File.Delete(file.FilePath);
+                                WriteToConsole("Deleted " + file.FileName + file.Extention);
                             }
                             else
                             {
-                                _fileCounts.Add(fileNameWithExtension, 1);
+                                _fileIDs.Add(pair, file.FilePath);
                             }
+                        }//uses md5 checksums looking for duplicate files
+                        else
+                        {
+                            StringBuilder finalPath = new StringBuilder();
+                            StringBuilder sb = new StringBuilder();
+                            finalPath.Append(file.FileFolder + "\\");
+                            sb.Append(file.FileName);
+                            if (uxReformatDates.Checked)//reformat date tool
+                            {
+
+                            }
+                            if (uxAddDates.Checked)//add date tool
+                            {
+
+                            }
+                            if (uxAddSuffix.Checked)//suffix tool
+                            {
+                                if (file.HasSuffix)
+                                {
+                                    sb.Append(" ");
+                                    sb.Append(folder.Suffix);
+                                }
+                            }
+                            if (uxNumberDuplicates.Checked)//checks for duplicates
+                            {
+                                string fileNameWithExtension = (file.FileName + file.Extention).ToLower();
+                                int count;
+                                if (_fileCounts.ContainsKey(fileNameWithExtension))
+                                {
+                                    count = _fileCounts[fileNameWithExtension] + 1;
+                                    _fileCounts[fileNameWithExtension] = count;
+                                    sb.Append(" (");
+                                    sb.Append(count - 1);
+                                    sb.Append(")");
+                                }
+                                else
+                                {
+                                    _fileCounts.Add(fileNameWithExtension, 1);
+                                }
+                            }
+                            //wraps up the file name
+                            sb.Append(file.Extention);
+                            finalPath.Append(sb.ToString());
+                            File.Move(file.FilePath, finalPath.ToString());
+                            WriteToConsole("Renamed " + file.FileName + " To " + sb.ToString());
+                            logFile.Append(finalPath.ToString() + "," + file.FilePath + Environment.NewLine);
+                            sb.Clear();
                         }
-                        //wraps up the file name
-                        sb.Append(file.Extention);
-                        finalPath.Append(sb.ToString());
-                        File.Move(file.FilePath, finalPath.ToString());
-                        WriteToConsole("Renamed " + file.FileName + " To " + sb.ToString());
-                        logFile.Append(finalPath.ToString()+","+file.FilePath+ Environment.NewLine);
-                        sb.Clear();
                         folder.NextFile();
                     }
                     _folders.Pop();
                 }
+                _fileCounts.Clear(); //make sure everything is cleared out after processing files
+                _fileIDs.Clear();
+                _folders.Clear();
+                uxFolderList.Items.Clear();
+                uxPath.Clear();
+                uxSuffixList.Items.Clear();
                 try
                 {
                     using (StreamWriter sw = File.AppendText(Directory.GetCurrentDirectory() + "\\renamelog.txt"))
                     {
-                        sw.Write(logFile.ToString() + Environment.NewLine + "END SESSION");
+                        sw.Write(logFile.ToString() + "END SESSION");
                     }
                 }
                 catch (Exception ex)
@@ -234,7 +262,11 @@ namespace SharepointAssistant
             uxConsole.Text += s + Environment.NewLine;
             Console.WriteLine(s);
         }
-
+        /// <summary>
+        /// shows/hides the suffix box
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void uxAddSuffix_Click(object sender, EventArgs e)
         {
             uxSuffix.Visible = uxAddSuffix.Checked;
