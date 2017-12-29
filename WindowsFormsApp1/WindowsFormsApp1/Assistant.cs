@@ -179,15 +179,22 @@ namespace SharepointAssistant
                             StringBuilder finalPath = new StringBuilder();
                             StringBuilder fileNameBuilder = new StringBuilder();
                             finalPath.Append(file.FileFolder + "\\");
-                            fileNameBuilder.Append(file.FileName);
                             if (uxReformatDates.Checked)//reformat date tool
                             {
+                                file.getDateName();
+                                if (file.HasDate)
+                                {
+                                    fileNameBuilder.Append(file.Date);
+                                }
 
                             }
                             if (uxAddDates.Checked)//add date tool
                             {
-
+                                file.GetDate();
+                                fileNameBuilder.Append(file.Date);
                             }
+                            fileNameBuilder.Append(file.FileName);
+
                             if (uxAddSuffix.Checked)//suffix tool
                             {
                                 if (file.HasSuffix)
@@ -261,27 +268,27 @@ namespace SharepointAssistant
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void uxPath_TextChanged(object sender, EventArgs e)
-        {
-            if (uxAddSuffix.Checked)
-            {
-                string folder = uxPath.Text;
-                folder = folder.Split('\\')[folder.Split('\\').Length - 1];
-                StringBuilder suffix = new StringBuilder();
-                if (folder != null)
-                {
-                    string[] folderWords = folder.Split(' ');
-                    foreach (string s in folderWords)
-                    {
-                        suffix.Append(s[0]);
-                    }
-                    if (uxSuffix.Text == blankText)
-                    {
-                        uxSuffix.Text = suffix.ToString().ToUpper();
-                    }
-                }
-            }
-        }
+        //private void uxPath_TextChanged(object sender, EventArgs e)
+        //{
+        //    if (uxAddSuffix.Checked)
+        //    {
+        //        string folder = uxPath.Text;
+        //        folder = folder.Split('\\')[folder.Split('\\').Length - 1];
+        //        StringBuilder suffix = new StringBuilder();
+        //        if (folder != null)
+        //        {
+        //            string[] folderWords = folder.Split(' ');
+        //            foreach (string s in folderWords)
+        //            {
+        //                suffix.Append(s[0]);
+        //            }
+        //            if (uxSuffix.Text == blankText)
+        //            {
+        //                uxSuffix.Text = suffix.ToString().ToUpper();
+        //            }
+        //        }
+        //    }
+        //}
         /// <summary>
         /// moves the file from the given location to the new location 
         /// makes sure to write to console and logfile
