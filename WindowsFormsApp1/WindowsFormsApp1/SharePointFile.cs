@@ -127,8 +127,9 @@ namespace SharepointAssistant
                 }
                 else
                 {
-                    _date += lastWriteTime.Day;
+                    date.Append(lastWriteTime.Day);
                 }
+                _date = date.ToString()+" ";
             }
         }
         /// <summary>
@@ -147,83 +148,94 @@ namespace SharepointAssistant
 
                     foreach (string numberCandidate in nameParts)
                     {
-                        int n;
-                        bool isNumeric = int.TryParse(numberCandidate, out n);
-                        int length = numberCandidate.Length;
-                        StringBuilder date = new StringBuilder();
-                        if (isNumeric)
+                        if (numberCandidate == "" || numberCandidate == " ")
                         {
-                            int year = Convert.ToInt32(numberCandidate.Substring(2, 2));
-                            int month = Convert.ToInt32(numberCandidate.Substring(0, 2));
-                            int day = 0;
-                            if (length == 4)
-                            {
-                                day = File.GetLastWriteTime(_path).Day;
-                                if (day <= 31 && day >= 1 && month <= 12 && month >= 1)
-                                {
-                                    if (year >= 80)
-                                    {
-                                        date.Append("19");
-                                    }
-                                    else if (year + 2000 <= DateTime.Now.Year)
-                                    {
-                                        date.Append("20");
-                                    }
-                                    else
-                                    {
-                                        name.Append(numberCandidate);
-                                        break;
-                                    }
-                                    //dont forget to append 0 where needed for month and day
-                                    date.Append(year + " " + month + day);//date found
-                                    _date = date.ToString();
-                                    goodDate = true;
-                                }
-                                else
-                                {
-                                    name.Append(numberCandidate);
-                                }
-                            }
-                            else if (length == 6)
-                            {
-                                day = Convert.ToInt32(numberCandidate.Substring(4, 2));
-                                if (day <= 31 && day >= 1 && month <= 12 && month >= 1)
-                                {
-                                    if (year >= 80)
-                                    {
-                                        date.Append("19");
-                                    }
-                                    else if (year + 2000 <= DateTime.Now.Year)
-                                    {
-                                        date.Append("20");
-                                    }
-                                    else
-                                    {
-                                        name.Append(numberCandidate);
-                                        break;
-                                    }
-                                    //dont forget to append 0 where needed for month and day
-                                    date.Append(year + " " + month + day);//date found
-                                    _date = date.ToString();
-                                    goodDate = true;
-                                }
-                                else
-                                {
-                                    name.Append(numberCandidate);
-                                }
-                            }
-                            else
-                            {
-                                //not of a valid number of chars to be a date
-                                name.Append(numberCandidate);
-                            }
-                        }// end is numeric
+                            //skip empty number candidate
+                        }
                         else
                         {
-                            name.Append(numberCandidate);//not a valid number so add it to the name
-                        }//end if else
-                    }//end for each name parts
+                            int n;
+                            bool isNumeric = int.TryParse(numberCandidate, out n);
+                            int length = numberCandidate.Length;
+                            StringBuilder date = new StringBuilder();
+                            if (isNumeric)
+                            {
+                                int year = 50; 
+                                int month = Convert.ToInt32(numberCandidate.Substring(0, 2));
+                                int day = 0;
+                                if (length == 4)
+                                {
+                                    year = Convert.ToInt32(numberCandidate.Substring(2, 2));
+                                    day = File.GetLastWriteTime(_path).Day;
+                                    if (day <= 31 && day >= 1 && month <= 12 && month >= 1)
+                                    {
+                                        if (year >= 80)
+                                        {
+                                            date.Append("19");
+                                        }
+                                        else if (year + 2000 <= DateTime.Now.Year)
+                                        {
+                                            date.Append("20");
+                                        }
+                                        else
+                                        {
+                                            name.Append(" " + numberCandidate);
+                                            break;
+                                        }
+                                        //dont forget to append 0 where needed for month and day
+                                        date.Append(year + " " + ((month < 10) ? "0" + month : month.ToString()) + ((day < 10) ? "0" + day : day.ToString()));//date found
+                                        _date = date.ToString();
+                                        goodDate = true;
+                                    }
+                                    else
+                                    {
+                                        name.Append(" " + numberCandidate);
+                                    }
+                                }
+                                else if (length == 6)
+                                {
+                                    day = Convert.ToInt32(numberCandidate.Substring(2, 2));
+                                    year = Convert.ToInt32(numberCandidate.Substring(4, 2));
+                                    if (day <= 31 && day >= 1 && month <= 12 && month >= 1)
+                                    {
+                                        if (year >= 80)
+                                        {
+                                            date.Append("19");
+                                        }
+                                        else if (year + 2000 <= DateTime.Now.Year)
+                                        {
+                                            date.Append("20");
+                                        }
+                                        else
+                                        {
+                                            name.Append(" " + numberCandidate);
+                                            break;
+                                        }
+                                        //dont forget to append 0 where needed for month and day
+                                        date.Append(year + " " + ((month < 10) ? "0" + month : month.ToString()) + ((day < 10) ? "0" + day : day.ToString())); ;//date found
+                                        _date = date.ToString();
+                                        goodDate = true;
+                                    }
+                                    else
+                                    {
+                                        name.Append(" " + numberCandidate);
+                                    }
+                                }
+                                else
+                                {
+                                    //not of a valid number of chars to be a date
+                                    name.Append(" " + numberCandidate);
+                                }
+                            }// end is numeric
+                            else
+                            {
+                                name.Append(" " + numberCandidate);//not a valid number so add it to the name
+                            }//end if else
+                            }//end else
+                        }//end for each name parts
+                        _fName = name.ToString();// set name parts that were found to the fname
                 }//end digit present
+
             }//end is good date
         }//end get date name
 
