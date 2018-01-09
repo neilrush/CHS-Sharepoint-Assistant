@@ -70,7 +70,15 @@ namespace SharepointAssistant
             {
                 foreach (string file in Directory.GetFiles(folder))
                 {
-                    _files.Enqueue(new SharePointFile(file,_suffix));
+                    try
+                    {
+                        _files.Enqueue(new SharePointFile(file, _suffix));
+                    }
+                    catch (IOException)
+                    {
+                        //skip file that has problems
+                        System.Console.WriteLine("skipped file " + file);
+                    }
                 }
                 foreach (string directory in Directory.GetDirectories(folder))
                 {

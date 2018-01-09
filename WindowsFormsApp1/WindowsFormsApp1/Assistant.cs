@@ -12,11 +12,11 @@ namespace SharepointAssistant
         /// <summary>
         /// keeps track of Duplicates
         /// </summary>
-        private Dictionary<string,int> _fileCounts = new Dictionary<string,int>();
+        private Dictionary<string, int> _fileCounts = new Dictionary<string, int>();
         /// <summary>
         /// stores files with a FileCodePair()
         /// </summary>
-        private Dictionary<FileCodePair,string> _fileIDs = new Dictionary<FileCodePair,string>();
+        private Dictionary<FileCodePair, string> _fileIDs = new Dictionary<FileCodePair, string>();
         /// <summary>
         /// stores the folders to be processed in order
         /// </summary>
@@ -27,7 +27,7 @@ namespace SharepointAssistant
             uxShowConsole.Text = ShowConsoleText[0];
             blankText = uxPath.Text;
         }
-#region Show/Hide Console
+        #region Show/Hide Console
         /// <summary>
         /// The strings to iterate through for the console button
         /// </summary>
@@ -65,7 +65,7 @@ namespace SharepointAssistant
         #endregion
 
 
-#region Folder Loading
+        #region Folder Loading
         /// <summary>
         /// Loads a folder using the path in the textbox
         /// </summary>
@@ -81,7 +81,7 @@ namespace SharepointAssistant
             {
                 uxFolderList.Items.Add(uxPath.Text);
                 uxSuffixList.Items.Add(uxSuffix.Text);
-                _folders.Push(new SharePointDirectory(uxPath.Text,uxSuffix.Text));
+                _folders.Push(new SharePointDirectory(uxPath.Text, uxSuffix.Text));
                 WriteToConsole(uxPath.Text + " was added to the folder list with suffix: " + uxSuffix.Text);
 
                 uxPath.Clear();
@@ -111,7 +111,7 @@ namespace SharepointAssistant
         /// <param name="e"></param>
         private void uxRemoveLast_Click(object sender, EventArgs e)
         {
-            if(_folders.Count>0)
+            if (_folders.Count > 0)
             {
                 string remove = _folders.Pop().FolderDirectory;
                 for (int n = uxFolderList.Items.Count - 1; n >= 0; --n)
@@ -130,7 +130,7 @@ namespace SharepointAssistant
                 MessageBox.Show("No Folders to Remove");
             }
         }
-#endregion
+        #endregion
         /// <summary>
         /// clears the list and the stack
         /// </summary>
@@ -151,105 +151,109 @@ namespace SharepointAssistant
         /// <param name="e"></param>
         private void uxRun_Click(object sender, EventArgs e)
         {
-            if (_folders.Count > 0) {
-                string exePath = Directory.GetCurrentDirectory();
-                StringBuilder logFile = new StringBuilder();
-                while (_folders.Count > 0)
+            try {
+                if (_folders.Count > 0)
                 {
-                    SharePointDirectory folder = _folders.Peek();
-                    while (folder.FileCount > 0)
+                    string exePath = Directory.GetCurrentDirectory();
+                    while (_folders.Count > 0)
                     {
-                        
-                        SharePointFile file = folder.PeekNextFile();
-                        if (uxDeleteCopies.Checked)
+                        SharePointDirectory folder = _folders.Peek();
+                        while (folder.FileCount > 0)
                         {
-                            FileCodePair pair = new FileCodePair(file.FilePath);
-                            if (_fileIDs.ContainsKey(pair))
+                            SharePointFile file = folder.PeekNextFile();
+                            if (uxDeleteCopies.Checked)
                             {
-                                Directory.CreateDirectory(Directory.GetCurrentDirectory() + "\\DeletedSharePointFiles\\");
-                                File.Move(file.FilePath, Directory.GetCurrentDirectory()+"\\DeletedSharePointFiles\\"+file.FileName+file.Extention);
-                                logFile.Append(Directory.GetCurrentDirectory() + "\\DeletedSharePointFiles\\" + file.FileName + file.Extention + "," + file.FilePath + Environment.NewLine);
-                                WriteToConsole("Deleted " + file.FileName + file.Extention);
-                            }
-                            else
-                            {
-                                _fileIDs.Add(pair, file.FilePath);
-                            }
-                        }//uses md5 checksums looking for duplicate files
-                        else
-                        {
-                            StringBuilder finalPath = new StringBuilder();
-                            StringBuilder sb = new StringBuilder();
-                            finalPath.Append(file.FileFolder + "\\");
-                            sb.Append(file.FileName);
-                            if (uxReformatDates.Checked)//reformat date tool
-                            {
-
-                            }
-                            if (uxAddDates.Checked)//add date tool
-                            {
-
-                            }
-                            if (uxAddSuffix.Checked)//suffix tool
-                            {
-                                if (file.HasSuffix)
+                                FileCodePair pair = new FileCodePair(file.FilePath);
+                                if (_fileIDs.ContainsKey(pair))
                                 {
-                                    sb.Append(" ");
-                                    sb.Append(folder.Suffix);
-                                }
-                            }
-                            if (uxNumberDuplicates.Checked)//checks for duplicates
-                            {
-                                string fileNameWithExtension = (file.FileName + file.Extention).ToLower();
-                                int count;
-                                if (_fileCounts.ContainsKey(fileNameWithExtension))
-                                {
-                                    count = _fileCounts[fileNameWithExtension] + 1;
-                                    _fileCounts[fileNameWithExtension] = count;
-                                    sb.Append(" (");
-                                    sb.Append(count - 1);
-                                    sb.Append(")");
+                                    Directory.CreateDirectory(Directory.GetCurrentDirectory() + "\\DeletedSharePointFiles\\");
+                                    move(file.FilePath, Directory.GetCurrentDirectory() + "\\DeletedSharePointFiles\\" + file.FileName + file.Extention);
+                                    WriteToConsole("Deleted " + file.FileName + file.Extention);
                                 }
                                 else
                                 {
-                                    _fileCounts.Add(fileNameWithExtension, 1);
+                                    _fileIDs.Add(pair, file.FilePath);
                                 }
+                            }//uses md5 checksums looking for duplicate files
+                            else
+                            {
+                                StringBuilder finalPath = new StringBuilder();
+                                StringBuilder fileNameBuilder = new StringBuilder();
+                                finalPath.Append(file.FileFolder + "\\");
+                                if (uxReformatDates.Checked)//reformat date tool
+                                {
+                                    file.getDateName();
+                                    if (file.HasDate)
+                                    {
+                                        fileNameBuilder.Append(file.Date);
+                                    }
+
+                                }
+                                if (uxAddDates.Checked)//add date tool
+                                {
+                                    file.GetDate();
+                                    fileNameBuilder.Append(file.Date);
+                                }
+                                fileNameBuilder.Append(file.FileName);
+
+                                if (uxAddSuffix.Checked)//suffix tool
+                                {
+                                    if (file.HasSuffix)
+                                    {
+                                        fileNameBuilder.Append(" ");
+                                        fileNameBuilder.Append(folder.Suffix);
+                                    }
+                                }
+                                if (uxNumberDuplicates.Checked)//checks for duplicates
+                                {
+                                    string fileNameWithExtension = (file.FileName + file.Extention).ToLower();
+                                    int count;
+                                    if (_fileCounts.ContainsKey(fileNameWithExtension))
+                                    {
+                                        count = _fileCounts[fileNameWithExtension] + 1;
+                                        _fileCounts[fileNameWithExtension] = count;
+                                        fileNameBuilder.Append(" (");
+                                        fileNameBuilder.Append(count - 1);
+                                        fileNameBuilder.Append(")");
+                                    }
+                                    else
+                                    {
+                                        _fileCounts.Add(fileNameWithExtension, 1);
+                                    }
+                                }
+                                //wraps up the file name remember to pass over files that did not change name
+                                fileNameBuilder.Append(file.Extention);
+                                finalPath.Append(fileNameBuilder.ToString());
+                                move(file.FilePath, finalPath.ToString());
+                                WriteToConsole("Renamed " + file.FileName + " To " + fileNameBuilder.ToString());
+                                fileNameBuilder.Clear();
                             }
-                            //wraps up the file name
-                            sb.Append(file.Extention);
-                            finalPath.Append(sb.ToString());
-                            File.Move(file.FilePath, finalPath.ToString());
-                            WriteToConsole("Renamed " + file.FileName + " To " + sb.ToString());
-                            logFile.Append(finalPath.ToString() + "," + file.FilePath + Environment.NewLine);
-                            sb.Clear();
+                            folder.NextFile();
                         }
-                        folder.NextFile();
+                        _folders.Pop();
                     }
-                    _folders.Pop();
-                }
-                _fileCounts.Clear(); //make sure everything is cleared out after processing files
-                _fileIDs.Clear();
-                _folders.Clear();
-                uxFolderList.Items.Clear();
-                uxPath.Clear();
-                uxSuffixList.Items.Clear();
-                try
-                {
-                    using (StreamWriter sw = File.AppendText(Directory.GetCurrentDirectory() + "\\renamelog.txt"))
+                    _fileCounts.Clear(); //make sure everything is cleared out after processing files
+                    _fileIDs.Clear();
+                    _folders.Clear();
+                    uxFolderList.Items.Clear();
+                    uxPath.Clear();
+                    uxSuffixList.Items.Clear();
+                    WriteToConsole("Done");
+                    if (ConsoleIndex == 0)
                     {
-                        sw.Write(logFile.ToString());
+                        MessageBox.Show("Done");
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show(ex.ToString());
+                    MessageBox.Show("nothing to process");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("nothing to process");
+                MessageBox.Show(ex.ToString());
             }
-        }
+            }
         /// <summary>
         /// writes the given string to the internal console and the Form console
         /// </summary>
@@ -277,27 +281,49 @@ namespace SharepointAssistant
         {
             if (uxAddSuffix.Checked)
             {
-                //try
-                //{
+                if (uxSuffix.Text!=blankText) {
                     string folder = uxPath.Text;
-                    folder = folder.Split('\\')[folder.Split('\\').Length-1];
+                    folder = folder.Split('\\')[folder.Split('\\').Length - 1];
                     StringBuilder suffix = new StringBuilder();
-                    if (folder != null) {
+                    if (folder != null)
+                    {
                         string[] folderWords = folder.Split(' ');
                         foreach (string s in folderWords)
                         {
-                            suffix.Append(s[0]);
+                            if (s != "")
+                            {
+                                suffix.Append(s[0]);
+                            }
                         }
                         if (uxSuffix.Text == blankText)
                         {
                             uxSuffix.Text = suffix.ToString().ToUpper();
                         }
                     }
-                //}
-                //catch (Exception ex)
-                //{
-                //    MessageBox.Show(ex.ToString);
-                //}
+                }
+            }
+        }
+        /// <summary>
+        /// moves the file from the given location to the new location 
+        /// makes sure to write to console and logfile
+        /// </summary>
+        /// <param name="oldFile"></param>
+        /// <param name="newFile"></param>
+        private void move(string oldFile, string newFile)
+        {
+            try
+            {
+                StringBuilder logFile = new StringBuilder();
+                File.Move(oldFile, newFile);
+                logFile.Append(newFile + "," + oldFile + Environment.NewLine);
+                using (StreamWriter sw = File.AppendText(Directory.GetCurrentDirectory() + "\\renamelog.txt"))
+                {
+                    sw.Write(logFile.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
             }
         }
     }
