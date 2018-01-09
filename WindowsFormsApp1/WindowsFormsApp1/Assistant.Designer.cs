@@ -98,7 +98,7 @@
             this.uxPath.Name = "uxPath";
             this.uxPath.Size = new System.Drawing.Size(267, 20);
             this.uxPath.TabIndex = 6;
-            this.uxPath.TextChanged += new System.EventHandler(this.uxPath_TextChanged);
+            //this.uxPath.TextChanged += new System.EventHandler(this.uxPath_TextChanged);
             // 
             // uxToolStrip
             // 
