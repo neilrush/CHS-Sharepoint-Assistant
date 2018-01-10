@@ -154,6 +154,14 @@ namespace SharepointAssistant
             try {
                 if (_folders.Count > 0)
                 {
+                    Dictionary<string, int> deletedFiles = new Dictionary<string, int>();
+                    if (uxDeleteCopies.Checked)
+                    {
+                        foreach(string s in Directory.GetFiles(Directory.GetCurrentDirectory() + "\\DeletedSharePointFiles\\"))
+                        {
+                            deletedFiles.Add(Path.GetFileName(s), 1);
+                        }
+                    }
                     string exePath = Directory.GetCurrentDirectory();
                     while (_folders.Count > 0)
                     {
@@ -166,8 +174,19 @@ namespace SharepointAssistant
                                 FileCodePair pair = new FileCodePair(file.FilePath);
                                 if (_fileIDs.ContainsKey(pair))
                                 {
+                                    string count="";
                                     Directory.CreateDirectory(Directory.GetCurrentDirectory() + "\\DeletedSharePointFiles\\");
-                                    move(file.FilePath, Directory.GetCurrentDirectory() + "\\DeletedSharePointFiles\\" + file.FileName + file.Extention);
+                                    if (deletedFiles.ContainsKey(pair.FileName))
+                                    {
+                                        count = (deletedFiles[Path.GetFileName(pair.FileName)] + 1).ToString();
+                                        deletedFiles[Path.GetFileName(pair.FileName)] = Convert.ToInt32(count);
+                                        count = " (" + (Convert.ToInt32(count) - 1 )+ ")";
+                                    }
+                                    else
+                                    {
+                                        _fileCounts.Add(pair.FileName, 1);
+                                    }
+                                    move(file.FilePath, Directory.GetCurrentDirectory() + "\\DeletedSharePointFiles\\" + file.FileName + count + file.Extention);
                                     WriteToConsole("Deleted " + file.FileName + file.Extention);
                                 }
                                 else
