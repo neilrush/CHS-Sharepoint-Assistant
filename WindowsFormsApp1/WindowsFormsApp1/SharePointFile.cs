@@ -158,7 +158,7 @@ namespace SharepointAssistant
                             bool isNumeric = int.TryParse(numberCandidate, out n);
                             int length = numberCandidate.Length;
                             StringBuilder date = new StringBuilder();
-                            if (isNumeric)
+                            if (isNumeric&&(length==4||length==6))
                             {
                                 int year = 50; 
                                 int month = Convert.ToInt32(numberCandidate.Substring(0, 2));
@@ -176,6 +176,10 @@ namespace SharepointAssistant
                                         else if (year + 2000 <= DateTime.Now.Year)
                                         {
                                             date.Append("20");
+                                            if (year < 10)
+                                            {
+                                                date.Append("0");
+                                            }
                                         }
                                         else
                                         {
@@ -205,6 +209,10 @@ namespace SharepointAssistant
                                         else if (year + 2000 <= DateTime.Now.Year)
                                         {
                                             date.Append("20");
+                                            if (year < 10)
+                                            {
+                                                date.Append("0");
+                                            }
                                         }
                                         else
                                         {
@@ -234,6 +242,10 @@ namespace SharepointAssistant
                             }//end else
                         }//end for each name parts
                         _fName = name.ToString();// set name parts that were found to the fname
+                    //if (!goodDate)//if search has been exausted and there is still no date
+                    //{
+                    //   getModifiedDate();
+                    //}
                 }//end digit present
 
             }//end is good date
@@ -262,6 +274,25 @@ namespace SharepointAssistant
                 }
             }
             return false;
+        }
+        /// <summary>
+        /// comments for good luck that this doesn't crash
+        /// </summary>
+        public string getModifiedDate()
+        {
+            string tempDateString="";
+            DateTime lastWriteTime = File.GetLastWriteTime(_path);
+            if (lastWriteTime.Year == 2007)
+            {
+                return "Enter Manually";
+            }
+            else
+            {
+                tempDateString = lastWriteTime.Year.ToString() + " ";
+                tempDateString = lastWriteTime.Month >= 10 ? tempDateString + lastWriteTime.Month : tempDateString + "0" + lastWriteTime.Month;
+                tempDateString = lastWriteTime.Day >= 10 ? tempDateString + lastWriteTime.Day : tempDateString + "0" + lastWriteTime.Day;
+                return tempDateString;
+            }
         }
     }
 }
