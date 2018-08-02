@@ -73,16 +73,26 @@ namespace SharepointAssistant
         /// <param name="e"></param>
         private void uxLoadFolder_Click(object sender, EventArgs e)
         {
-            if (uxPath.Text.Trim().Equals(blankText))
+            if (uxPath.Text.Trim().Equals(blankText)||!Directory.Exists(uxPath.Text))
             {
-                MessageBox.Show("You must enter a path");
+                MessageBox.Show("invalid path");
             }
             else
             {
                 uxFolderList.Items.Add(uxPath.Text);
+                if (uxAddSuffix.Checked) {
                 uxSuffixList.Items.Add(uxSuffix.Text);
-                _folders.Push(new SharePointDirectory(uxPath.Text, uxSuffix.Text));
-                WriteToConsole(uxPath.Text + " was added to the folder list with suffix: " + uxSuffix.Text);
+                    _folders.Push(new SharePointDirectory(uxPath.Text, uxSuffix.Text));
+                    WriteToConsole(uxPath.Text + " was added to the folder list with suffix: " + uxSuffix.Text);
+                }
+                else
+                {
+                    uxSuffixList.Items.Add("");
+                    _folders.Push(new SharePointDirectory(uxPath.Text, ""));
+                    WriteToConsole(uxPath.Text + " was added to the folder list");
+                }
+               
+                
 
                 uxPath.Clear();
                 uxSuffix.Clear();
@@ -141,6 +151,7 @@ namespace SharepointAssistant
             _folders.Clear();
             uxFolderList.Items.Clear();
             uxPath.Clear();
+            uxSuffix.Clear();
             uxSuffixList.Items.Clear();
             WriteToConsole("Cleared");
         }
@@ -214,15 +225,16 @@ namespace SharepointAssistant
                                     }
                                     if (uxAddDates.Checked)//add date tool
                                     {
-                                        if (!file.HasDate) {
-                                        fileNameBuilder.Append(file.getModifiedDate()+" ");
+                                        if (!file.HasDate)
+                                        {
+                                            fileNameBuilder.Append(file.getModifiedDate() + " ");
                                         }
                                     }
                                     fileNameBuilder.Append(file.FileName);
 
                                     if (uxAddSuffix.Checked)//suffix tool
                                     {
-                                        if (file.HasSuffix)
+                                        if (file.HasSuffix&&!(((file.FileName).ToLower()).Contains(folder.Suffix.ToLower())))
                                         {
                                             fileNameBuilder.Append(" ");
                                             fileNameBuilder.Append(folder.Suffix);
@@ -252,7 +264,7 @@ namespace SharepointAssistant
                                     WriteToConsole("Renamed " + file.FileName + " To " + fileNameBuilder.ToString());
                                     fileNameBuilder.Clear();
                                 }
-                               
+
                             }
                             catch (Exception ex)
                             {
@@ -269,6 +281,7 @@ namespace SharepointAssistant
                     uxFolderList.Items.Clear();
                     uxPath.Clear();
                     uxSuffixList.Items.Clear();
+                    uxSuffix.Clear();
                     WriteToConsole("Done");
                     if (ConsoleIndex == 0)
                     {
@@ -310,30 +323,7 @@ namespace SharepointAssistant
         /// <param name="e"></param>
         private void uxPath_TextChanged(object sender, EventArgs e)
         {
-            if (uxAddSuffix.Checked)
-            {
-                if (uxSuffix.Text != blankText)
-                {
-                    string folder = uxPath.Text;
-                    folder = folder.Split('\\')[folder.Split('\\').Length - 1];
-                    StringBuilder suffix = new StringBuilder();
-                    if (folder != null)
-                    {
-                        string[] folderWords = folder.Split(' ');
-                        foreach (string s in folderWords)
-                        {
-                            if (s != "")
-                            {
-                                suffix.Append(s[0]);
-                            }
-                        }
-                        if (uxSuffix.Text == blankText)
-                        {
-                            uxSuffix.Text = suffix.ToString().ToUpper();
-                        }
-                    }
-                }
-            }
+
         }
         /// <summary>
         /// moves the file from the given location to the new location 
@@ -345,18 +335,27 @@ namespace SharepointAssistant
         {
             try
             {
-                StringBuilder logFile = new StringBuilder();
                 File.Move(oldFile, newFile);
-                logFile.Append(newFile + "," + oldFile + Environment.NewLine);
-                using (StreamWriter sw = File.AppendText(Directory.GetCurrentDirectory() + "\\renamelog.txt"))
-                {
-                    sw.Write(logFile.ToString());
-                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
         }
+
+        private void uxPath_TextChanged_1(object sender, EventArgs e)
+        {
+            try
+            {
+                string folder = uxPath.Text;
+                String dirname = new DirectoryInfo(folder).Name;
+                uxSuffix.Text = dirname;
+            }
+            catch (Exception)
+            {
+                //just skip
+            }
+        }
+
     }
 }

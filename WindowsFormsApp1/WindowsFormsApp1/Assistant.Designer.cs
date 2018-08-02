@@ -43,11 +43,11 @@
             this.uxReformatDates = new System.Windows.Forms.ToolStripMenuItem();
             this.uxAddSuffix = new System.Windows.Forms.ToolStripMenuItem();
             this.uxNumberDuplicates = new System.Windows.Forms.ToolStripMenuItem();
+            this.uxDeleteCopies = new System.Windows.Forms.ToolStripMenuItem();
             this.uxFolderList = new System.Windows.Forms.ListBox();
             this.uxShowConsole = new System.Windows.Forms.Button();
             this.uxSuffix = new System.Windows.Forms.TextBox();
             this.uxSuffixList = new System.Windows.Forms.ListBox();
-            this.uxDeleteCopies = new System.Windows.Forms.ToolStripMenuItem();
             this.uxToolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -98,7 +98,7 @@
             this.uxPath.Name = "uxPath";
             this.uxPath.Size = new System.Drawing.Size(267, 20);
             this.uxPath.TabIndex = 6;
-            //this.uxPath.TextChanged += new System.EventHandler(this.uxPath_TextChanged);
+            this.uxPath.TextChanged += new System.EventHandler(this.uxPath_TextChanged_1);
             // 
             // uxToolStrip
             // 
@@ -183,6 +183,13 @@
             this.uxNumberDuplicates.Size = new System.Drawing.Size(211, 22);
             this.uxNumberDuplicates.Text = "Number Duplicate Names";
             // 
+            // uxDeleteCopies
+            // 
+            this.uxDeleteCopies.CheckOnClick = true;
+            this.uxDeleteCopies.Name = "uxDeleteCopies";
+            this.uxDeleteCopies.Size = new System.Drawing.Size(211, 22);
+            this.uxDeleteCopies.Text = "Delete Copy Files";
+            // 
             // uxFolderList
             // 
             this.uxFolderList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -221,13 +228,6 @@
             this.uxSuffixList.Name = "uxSuffixList";
             this.uxSuffixList.Size = new System.Drawing.Size(142, 69);
             this.uxSuffixList.TabIndex = 11;
-            // 
-            // uxDeleteCopies
-            // 
-            this.uxDeleteCopies.CheckOnClick = true;
-            this.uxDeleteCopies.Name = "uxDeleteCopies";
-            this.uxDeleteCopies.Size = new System.Drawing.Size(211, 22);
-            this.uxDeleteCopies.Text = "Delete Copy Files";
             // 
             // assistant
             // 
