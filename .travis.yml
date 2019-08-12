@@ -1,2 +1,9 @@
 language: csharp 
 solution: SharepointAssistant/CHS Sharepoint Assistant.sln
+deploy:
+  provider: releases
+  api_key: $key
+  file: "SharepointAssistant/WindowsFormsApp1/bin/Release/SharepointAssistant.exe"
+  skip_cleanup: true
+  on:
+    tags: true
