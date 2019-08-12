@@ -61,7 +61,7 @@
     <ManifestCertificateThumbprint>8D6BEF44F807AF9FCEFBB502A3E87EA187827792</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>
