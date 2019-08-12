@@ -1,7 +1,7 @@
-﻿using System.IO;
-using System;
-using System.Text;
+﻿using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace SharepointAssistant
 {
@@ -129,7 +129,7 @@ namespace SharepointAssistant
                 {
                     date.Append(lastWriteTime.Day);
                 }
-                _date = date.ToString()+" ";
+                _date = date.ToString() + " ";
             }
         }
         /// <summary>
@@ -158,9 +158,9 @@ namespace SharepointAssistant
                             bool isNumeric = int.TryParse(numberCandidate, out n);
                             int length = numberCandidate.Length;
                             StringBuilder date = new StringBuilder();
-                            if (isNumeric&&(length==4||length==6))
+                            if (isNumeric && (length == 4 || length == 6))
                             {
-                                int year = 50; 
+                                int year = 50;
                                 int month = Convert.ToInt32(numberCandidate.Substring(0, 2));
                                 int day = 0;
                                 if (length == 4)
@@ -239,9 +239,9 @@ namespace SharepointAssistant
                             {
                                 name.Append(" " + numberCandidate);//not a valid number so add it to the name
                             }//end if else
-                            }//end else
-                        }//end for each name parts
-                        _fName = name.ToString();// set name parts that were found to the fname
+                        }//end else
+                    }//end for each name parts
+                    _fName = name.ToString();// set name parts that were found to the fname
                     //if (!goodDate)//if search has been exausted and there is still no date
                     //{
                     //   getModifiedDate();
@@ -280,7 +280,7 @@ namespace SharepointAssistant
         /// </summary>
         public string getModifiedDate()
         {
-            string tempDateString="";
+            string tempDateString = "";
             DateTime lastWriteTime = File.GetLastWriteTime(_path);
             if (lastWriteTime.Year == 2007)
             {
