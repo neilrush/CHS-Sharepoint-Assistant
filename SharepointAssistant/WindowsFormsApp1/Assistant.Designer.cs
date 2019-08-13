@@ -48,6 +48,7 @@
             this.uxShowConsole = new System.Windows.Forms.Button();
             this.uxSuffix = new System.Windows.Forms.TextBox();
             this.uxSuffixList = new System.Windows.Forms.ListBox();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.uxToolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -151,7 +152,7 @@
             this.uxNumberDuplicates,
             this.uxDeleteCopies});
             this.Tools.Name = "Tools";
-            this.Tools.Size = new System.Drawing.Size(49, 22);
+            this.Tools.Size = new System.Drawing.Size(47, 22);
             this.Tools.Text = "Tools";
             // 
             // uxAddDates
@@ -229,6 +230,10 @@
             this.uxSuffixList.Size = new System.Drawing.Size(142, 69);
             this.uxSuffixList.TabIndex = 11;
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BackgroundWorker1_DoWork);
+            // 
             // assistant
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -277,6 +282,7 @@
         private System.Windows.Forms.ListBox uxSuffixList;
         private System.Windows.Forms.ToolStripMenuItem uxNumberDuplicates;
         private System.Windows.Forms.ToolStripMenuItem uxDeleteCopies;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 
