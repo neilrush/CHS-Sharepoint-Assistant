@@ -1,5 +1,5 @@
-# CHS-Sharepoint-Assistant
-Tool for renaming files in bulk. Purpose built for CHS data storage standards to move to sharepoint.
+# CHS Sharepoint Assistant
+A tool for renaming files in bulk. Purpose built for CHS P&T data storage needs to move files to sharepoint.
 
 add dates:
     for adding dates to files that have no date. skips if valid date is detected. format: MMDD YYYY
